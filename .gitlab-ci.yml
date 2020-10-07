@@ -5,6 +5,7 @@ stages:
   - deploy_stage
 
 build:
+  stage: build
   script:
     - yarn
     - yarn build
