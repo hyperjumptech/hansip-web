@@ -1,0 +1,42 @@
+image: node:14
+
+stages:
+  - build
+  - deploy_stage
+
+build:
+  script:
+    - yarn
+    - yarn build
+
+test_variable:
+  stage: test
+  script:
+    - echo "$DOKKU_PRIVATE_KEY"
+    - echo "$GITLAB_PRIVATE_KEY"
+
+deploy-stage:
+  image: ubuntu
+  stage: deploy_stage
+
+  only:
+    - master
+
+  before_script:
+    - apt-get update -y
+    - apt-get install vim git openssh-client  -y
+    - eval $(ssh-agent -s)
+    - mkdir -p ~/.ssh
+    - touch ~/.ssh/known_hosts
+    - chmod 700 ~/.ssh
+    - chmod 600 ~/.ssh/known_hosts
+    - cat "$GITLAB_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - cat "$DOKKU_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts
+    - ssh-keyscan -t rsa 172.31.219.130 >> ~/.ssh/known_hosts
+
+  script:
+    - git clone git@gitlab.com:prakerja/hansip-fe.git
+    - cd hansip-fe/
+    - git remote add staging dokku@172.31.219.130:hansip-fe
+    - git push -f staging `git rev-parse --abbrev-ref HEAD`:master
