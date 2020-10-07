@@ -9,12 +9,6 @@ build:
     - yarn
     - yarn build
 
-test_variable:
-  stage: test
-  script:
-    - echo "$DOKKU_PRIVATE_KEY"
-    - echo "$GITLAB_PRIVATE_KEY"
-
 deploy-stage:
   image: ubuntu
   stage: deploy_stage
