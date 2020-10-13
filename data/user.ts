@@ -1,6 +1,6 @@
 import useSWR, { mutate } from "swr";
 import fetcher from "./fetcher";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import { UserType } from "./use-get-users";
 import { post } from "./requests";
 
@@ -27,6 +27,7 @@ export const useUser = () => {
 };
 
 export const useWhoAmI = () => {
+  const [slowLoading, setSlowLoading] = useState(false);
   const { data, error } = useSWR(
     WHO_AM_I_PATHNAME,
     (url) => fetcher(url, null, null),
@@ -34,7 +35,18 @@ export const useWhoAmI = () => {
       refreshInterval: 4 * 60 * 1000,
       errorRetryInterval: 10000,
       errorRetryCount: 3,
-      refreshWhenHidden: true
+      loadingTimeout: 2000,
+      refreshWhenHidden: true,
+      onLoadingSlow: () => {
+        console.log("loading slow");
+        setSlowLoading(true);
+      },
+      onSuccess: () => {
+        setSlowLoading(false);
+      },
+      onError: () => {
+        setSlowLoading(false);
+      }
     }
   );
 
@@ -56,7 +68,8 @@ export const useWhoAmI = () => {
   return {
     data: data ? data.data : null,
     loading: !error && !data,
-    error
+    error,
+    slowLoading
   };
 };
 

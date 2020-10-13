@@ -72,5 +72,6 @@
   "confirm-delete-user": "Anda yakin ingin menghapus user ini?",
   "confirm-delete-group": "Anda yakin ingin menghapus grup ini?",
   "confirm-delete-role": "Anda yakin ingin menghapus peran ini?",
-  "sign-out": "Keluar"
+  "sign-out": "Keluar",
+  "error-connect": "Tidak dapat menghubungi server API."
 }

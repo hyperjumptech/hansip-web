@@ -3,13 +3,18 @@ import "../styles/index.css";
 
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css"; // Import the CSS
-import { LanguageContext, defaultLanguageContext } from "../components/locales";
+import {
+  LanguageContext,
+  defaultLanguageContext,
+  useLocale
+} from "../components/locales";
 config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
 import { useState, useCallback } from "react";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import { UserContext, defaultUserContext, useWhoAmI } from "../data/user";
 import { useRouter } from "next/router";
+import Error from "../components/error";
 dayjs.extend(localizedFormat);
 
 const publicPages = ["/", "/activate", "/recover"];
@@ -24,6 +29,7 @@ interface MyAppProps {
 function MyApp({ Component, pageProps }: MyAppProps) {
   const [langContext, setLangContext] = useState(defaultLanguageContext);
   const [currentUser, setCurrentUser] = useState(null);
+  const { strings } = useLocale();
   const updateLanguage = useCallback(
     (selectedLanguage) => {
       setLangContext({
@@ -34,7 +40,7 @@ function MyApp({ Component, pageProps }: MyAppProps) {
     [langContext]
   );
 
-  const { data: user, loading, error } = useWhoAmI();
+  const { data: user, loading, error, slowLoading } = useWhoAmI();
   const router = useRouter();
   const pathname = router.pathname;
 
@@ -69,19 +75,19 @@ function MyApp({ Component, pageProps }: MyAppProps) {
     }
   }, [user, loading, error, pathname]);
 
-  if (
+  const showLoading =
     (loading && !currentUser) ||
     (isPrivatePage(pathname) && !currentUser) ||
-    (pathname === "/" && currentUser)
-  ) {
-    return null;
-  }
+    (pathname === "/" && currentUser);
 
   return (
     <LanguageContext.Provider value={{ ...langContext, updateLanguage }}>
       <UserContext.Provider value={currentUser}>
         <div className="bg-gray-100 font-family-karla flex">
-          <Component {...pageProps} />
+          {(error || slowLoading) && (
+            <Error message={strings("error-connect")} />
+          )}
+          {!error && !showLoading && <Component {...pageProps} />}
         </div>
       </UserContext.Provider>
     </LanguageContext.Provider>

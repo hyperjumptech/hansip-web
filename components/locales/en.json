@@ -72,5 +72,6 @@
   "confirm-delete": "Are you sure you want to delete this user?",
   "confirm-delete-group": "Are you sure you want to delete this group?",
   "confirm-delete-role": "Are you sure you want to delete this role?",
-  "sign-out": "Sign out"
+  "sign-out": "Sign out",
+  "error-connect": "Cannot connect to API server."
 }
