@@ -67,6 +67,7 @@ const ChangePasswordView = ({
           disabled={isLoading}
           error={errors ? errors["newPassword"] : null}
           onChange={(e) => setFormState("newPassword", e.target.value)}
+          note={strings("password-requirement")}
         />
 
         <LabelInput

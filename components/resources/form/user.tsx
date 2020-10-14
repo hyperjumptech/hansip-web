@@ -1,4 +1,4 @@
-import React, { useState, useContext, FormEvent } from "react";
+import React, { useState, useContext, FormEvent, useEffect } from "react";
 import { UserType, EmptyUser } from "../../../data/use-get-users";
 import { useLocale } from "../../locales";
 import Select from "../../select";
@@ -38,10 +38,14 @@ const UserFormView = ({
   const loggedInUser = useUser();
   return (
     <form onSubmit={onSubmit} className="resource-form">
-      {error && <div className="error-box">{error}</div>}
+      {error && (
+        <div id="error" className="error-box">
+          {error}
+        </div>
+      )}
 
       <LabelInput
-        id="name"
+        id="email"
         disabled={isEdit || isLoading}
         value={user.email || "  "}
         inputType="email"
@@ -57,8 +61,9 @@ const UserFormView = ({
           value={user.password}
           inputType="text"
           labelText={strings("password")}
-          placeholder=""
+          placeholder="abcd abcd abcd"
           onChange={(e) => onChange("password", e.target.value)}
+          note={strings("password-requirement")}
         />
       )}
 
@@ -165,6 +170,7 @@ const UserFormView = ({
       })}
 
       <SaveDeleteButtons
+        isLoading={isLoading}
         showDelete={isEdit && user.rec_id !== loggedInUser.rec_id}
         onDelete={onDelete}
       />
@@ -200,6 +206,14 @@ const UserForm = ({
   const router = useRouter();
   const { strings } = useLocale();
 
+  useEffect(() => {
+    if (error) {
+      var element = document.getElementById("error");
+
+      element.scrollIntoView();
+    }
+  }, [error]);
+
   const onChange = (key: string, value: any) => {
     setUser((u) => {
       const newU = {
@@ -212,6 +226,7 @@ const UserForm = ({
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     const url = isEdit ? `/management/user/${user.rec_id}` : "/management/user";
     const body = isEdit
@@ -258,7 +273,11 @@ const UserForm = ({
           )
         ]);
       })
-      .then(([roleResponse, groupResponse]) => {
+      .then((roleGroupRespones) => {
+        if (!roleGroupRespones) {
+          return null;
+        }
+        const [roleResponse, groupResponse] = roleGroupRespones;
         if (!roleResponse || !groupResponse) {
           setIsLoading(false);
         } else {

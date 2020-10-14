@@ -73,5 +73,6 @@
   "confirm-delete-group": "Anda yakin ingin menghapus grup ini?",
   "confirm-delete-role": "Anda yakin ingin menghapus peran ini?",
   "sign-out": "Keluar",
-  "error-connect": "Tidak dapat menghubungi server API."
+  "error-connect": "Tidak dapat menghubungi server API.",
+  "password-requirement": "Password harus: <ol class='list-disc list-inside'><li>minimum 8 karakter</li><li>3 kata dipisahkan oleh karakter spasi</li><li>minimum 3 karakter untuk tiap kata.</li></ol>"
 }

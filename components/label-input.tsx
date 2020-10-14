@@ -44,7 +44,12 @@ export const LabelInput = ({
         value={value}
         onChange={onChange}
       />
-      {note && <span className="text-sm text-gray-600">{note}</span>}
+      {note && (
+        <div
+          id={`error-${id}`}
+          className="text-sm text-gray-600 my-2"
+          dangerouslySetInnerHTML={{ __html: note }}></div>
+      )}
     </div>
   );
 };
