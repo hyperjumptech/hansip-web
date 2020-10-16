@@ -1,6 +1,11 @@
 import { getSavedTokens, refreshSavedToken } from "./user";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8088";
+export const apiURL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8088";
+export const baseURL = () => {
+  const apiPrefix = window.localStorage.getItem("api_prefix") ?? "/api/v1";
+  return `${apiURL}${apiPrefix}`;
+};
 
 const authorizedPost = (
   path: string,
@@ -12,7 +17,7 @@ const authorizedPost = (
   if (!tokenToUse) {
     tokenToUse = getSavedTokens().access_token;
   }
-  return fetch(`${baseURL}/api/v1${path}`, {
+  return fetch(`${baseURL()}${path}`, {
     method: method || "POST",
     headers: {
       "Content-type": "application/json",
@@ -61,7 +66,7 @@ export const get = (
   if (!tokenToUse) {
     tokenToUse = getSavedTokens().access_token;
   }
-  const theURL = new URL(`${baseURL}/api/v1${path}`);
+  const theURL = new URL(`${baseURL()}${path}`);
   if (searchParams) {
     const keys = Object.keys(searchParams);
     for (let index = 0; index < keys.length; index++) {

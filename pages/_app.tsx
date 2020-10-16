@@ -15,6 +15,7 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 import { UserContext, defaultUserContext, useWhoAmI } from "../data/user";
 import { useRouter } from "next/router";
 import Error from "../components/error";
+import { apiURL } from "../data/requests";
 dayjs.extend(localizedFormat);
 
 const publicPages = ["/", "/activate", "/recover"];
@@ -22,11 +23,47 @@ const isPrivatePage = (pathname: string): boolean => {
   return publicPages.indexOf(pathname) === -1;
 };
 
-interface MyAppProps {
+interface MainAppProps {
   Component: React.ElementType;
   pageProps: any;
 }
-function MyApp({ Component, pageProps }: MyAppProps) {
+
+// Fetch the API prefix from hansip API first before showing the main component
+const Root = (props: MainAppProps) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch(`${apiURL}/docs/spec/hansip-api.json`)
+      .then((r) => r.json())
+      .then((spec) => {
+        if (spec.basePath) {
+          window.localStorage.setItem("api_prefix", spec.basePath);
+          setIsLoading(false);
+        } else {
+          setError(true);
+          setIsLoading(false);
+        }
+      })
+      .catch((error) => {
+        setError(true);
+        setIsLoading(false);
+      });
+  }, []);
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (error) {
+    return <div>Cannot get API prefix from API server</div>;
+  }
+
+  return <MainApp {...props} />;
+};
+
+// The main component of the app
+function MainApp({ Component, pageProps }: MainAppProps) {
   const [langContext, setLangContext] = useState(defaultLanguageContext);
   const [currentUser, setCurrentUser] = useState(null);
   const { strings } = useLocale();
@@ -94,4 +131,4 @@ function MyApp({ Component, pageProps }: MyAppProps) {
   );
 }
 
-export default MyApp;
+export default Root;
