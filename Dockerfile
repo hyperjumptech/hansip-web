@@ -7,5 +7,5 @@ WORKDIR /hansip
 RUN yarn
 COPY .env.local.template .env.local
 RUN yarn build
-EXPOSE 3001
-CMD ["yarn","start","-p","3001"]
+EXPOSE 80
+CMD ["yarn","start","-p","80"]
