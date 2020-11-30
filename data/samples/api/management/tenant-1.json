@@ -1,0 +1,11 @@
+{
+  "httpcode": 200,
+  "message": "Tenant retrieved",
+  "status": "SUCCESS",
+  "data": {
+    "rec_id": "mvIOOfVLo7",
+    "name": "Hansip System",
+    "description": "Hansip built in tenant",
+    "domain": "hansip"
+  }
+}

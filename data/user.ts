@@ -1,7 +1,15 @@
 import useSWR, { mutate } from "swr";
 import fetcher from "./fetcher";
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import { UserType } from "./use-get-users";
+import useGetTenants from "./use-get-tenants";
 import { post } from "./requests";
 
 const WHO_AM_I_PATHNAME = "/management/user/whoami";
@@ -28,7 +36,7 @@ export const useUser = () => {
 
 export const useWhoAmI = () => {
   const [slowLoading, setSlowLoading] = useState(false);
-  const { data, error } = useSWR(
+  const { data: whoamiData, error: whoamiError } = useSWR(
     WHO_AM_I_PATHNAME,
     (url) => fetcher(url, null, null),
     {
@@ -50,9 +58,41 @@ export const useWhoAmI = () => {
     }
   );
 
+  const whoamiLoading = !whoamiError && !whoamiData;
+
+  const {
+    data: tenantsData,
+    loading: tenantsLoading,
+    error: tenantsError
+  } = useGetTenants({
+    page_no: 1,
+    page_size: 1000, // assuming tenant counts will never reach 1000
+    order_by: "name",
+    sort: "ASC"
+  });
+
+  const data = useMemo(() => {
+    if (whoamiData?.data && tenantsData) {
+      const domains = Array.from(
+        new Set([
+          ...whoamiData.data.roles.map((role) => role.role_domain),
+          ...whoamiData.data.groups.map((group) => group.group_domain)
+        ])
+      );
+
+      const tenants = domains.map((domain) =>
+        tenantsData.tenants.find((tenant) => tenant.domain === domain)
+      );
+
+      return Object.assign({}, whoamiData.data, { tenants });
+    } else {
+      return null;
+    }
+  }, [whoamiData?.data, tenantsData]);
+
   // refresh the token if needed
   const token = getSavedTokens();
-  if ((data && data["status"] === "FAIL") || error) {
+  if ((whoamiData && whoamiData["status"] === "FAIL") || whoamiError) {
     if (token.refresh_token) {
       refreshSavedToken(token.refresh_token);
       return {
@@ -66,9 +106,9 @@ export const useWhoAmI = () => {
   }
 
   return {
-    data: data ? data.data : null,
-    loading: !error && !data,
-    error,
+    data,
+    loading: whoamiLoading || tenantsLoading,
+    error: whoamiError || tenantsError,
     slowLoading
   };
 };
