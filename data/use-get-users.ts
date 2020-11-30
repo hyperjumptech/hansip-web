@@ -2,6 +2,7 @@ import useSWR from "swr";
 import fetcher, { DataPagingType, DataPagingQueryType } from "./fetcher";
 import { RoleType } from "./use-get-roles";
 import { GroupType } from "./use-get-groups";
+import { TenantType } from "./use-get-tenants";
 import { UserFormInitialData } from "../components/resources/form/user";
 
 export interface UserType {
@@ -16,6 +17,7 @@ export interface UserType {
   refresh_token?: string;
   roles?: Array<RoleType>;
   groups?: Array<GroupType>;
+  tenants?: Array<TenantType>;
   password?: string;
 }
 

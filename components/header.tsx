@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import Select, { CaretDown } from "./select";
 import { LanguageContext, useLocale } from "./locales";
+import { TenantContext } from "../data/tenant";
 import { useUser } from "../data/user";
 import Dropdown from "./dropdown";
 
@@ -16,15 +17,18 @@ const AccountDropdown = () => {
             <CaretDown />
           </div>
         </div>
-      }>
+      }
+    >
       <a
         href="/dashboard/settings"
-        className="block px-4 py-2 account-link hover:text-white">
+        className="block px-4 py-2 account-link hover:text-white"
+      >
         {strings("settings")}
       </a>
       <a
         href="/logout"
-        className="block px-4 py-2 account-link hover:text-white">
+        className="block px-4 py-2 account-link hover:text-white"
+      >
         {strings("sign-out")}
       </a>
     </Dropdown>
@@ -36,12 +40,26 @@ interface DesktopHeaderProps {
 }
 const DesktopHeader = ({ showLogo }: DesktopHeaderProps) => {
   const language = useContext(LanguageContext);
+  const tenant = useContext(TenantContext);
   const user = useUser();
+
+  const tenantOptions = (tenant.tenants || []).map((tenant) => ({
+    title: tenant.name,
+    value: tenant.rec_id
+  }));
+
   return (
     <header className="w-full flex items-center justify-between bg-white py-2 px-6 space-x-2 bg-opacity-25">
       {showLogo && <h1 className=" text-3xl font-bold text-white">HANSIP</h1>}
       {!showLogo && <div></div>}
-      <div className={`relative  flex justify-end items-center`}>
+      <div className={`relative flex justify-end items-center`}>
+        <Select
+          onChange={(event) => {
+            tenant.updateTenant(event.target.value);
+          }}
+          value={tenant.selected}
+          options={tenantOptions}
+        />
         <Select
           onChange={(event) => {
             language.updateLanguage(event.target.value);
@@ -59,7 +77,7 @@ const DesktopHeader = ({ showLogo }: DesktopHeaderProps) => {
           ]}
         />
         {user && user.rec_id && (
-          <div className={`relative  flex justify-end`}>
+          <div className={`relative flex justify-end`}>
             <AccountDropdown />
           </div>
         )}

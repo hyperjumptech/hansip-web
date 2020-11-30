@@ -1,13 +1,6 @@
 import useSWR, { mutate } from "swr";
 import fetcher from "./fetcher";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { UserType } from "./use-get-users";
 import useGetTenants from "./use-get-tenants";
 import { post } from "./requests";
@@ -73,16 +66,14 @@ export const useWhoAmI = () => {
 
   const data = useMemo(() => {
     if (whoamiData?.data && tenantsData) {
-      const domains = Array.from(
-        new Set([
-          ...whoamiData.data.roles.map((role) => role.role_domain),
-          ...whoamiData.data.groups.map((group) => group.group_domain)
-        ])
-      );
+      const domains = [
+        ...whoamiData.data.roles.map((role) => role.role_domain),
+        ...whoamiData.data.groups.map((group) => group.group_domain)
+      ];
 
-      const tenants = domains.map((domain) =>
-        tenantsData.tenants.find((tenant) => tenant.domain === domain)
-      );
+      const tenants = tenantsData.tenants
+        .filter((tenant) => domains.includes(tenant.domain))
+        .sort((a, b) => Number(a.name < b.name));
 
       return Object.assign({}, whoamiData.data, { tenants });
     } else {

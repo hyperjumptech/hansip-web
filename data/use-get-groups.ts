@@ -1,6 +1,7 @@
 import useSWR from "swr";
 import { GroupFormInitialData } from "../components/resources/form/group";
 import fetcher, { DataPagingType, DataPagingQueryType } from "./fetcher";
+import { useTenant } from "./tenant";
 import { RoleType } from "./use-get-roles";
 
 export interface GroupType {
@@ -53,8 +54,16 @@ const useGetGroups = ({
   order_by,
   sort
 }: DataPagingQueryType): GetGroupsResult => {
+  const { selectedTenant } = useTenant();
+
   const { data, error } = useSWR(
-    ["/management/groups", page_no, page_size, order_by, sort],
+    [
+      selectedTenant ? `/management/tenant/${selectedTenant}/groups` : null,
+      page_no,
+      page_size,
+      order_by,
+      sort
+    ],
     (url, page_no, page_size, order_by, sort) => {
       return fetcher(
         url,
