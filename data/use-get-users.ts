@@ -4,6 +4,7 @@ import { RoleType } from "./use-get-roles";
 import { GroupType } from "./use-get-groups";
 import { TenantType } from "./use-get-tenants";
 import { UserFormInitialData } from "../components/resources/form/user";
+import { useTenant } from "./tenant";
 
 export interface UserType {
   rec_id: string;
@@ -125,6 +126,8 @@ export interface GetUserResult {
   error: Error;
 }
 export const useGetUser = (userId: string): GetUserResult => {
+  const { selectedTenant } = useTenant();
+
   const { data: userData, error: userError } = useSWR(
     `/management/user/${userId}`,
     (url) => {
@@ -152,7 +155,7 @@ export const useGetUser = (userId: string): GetUserResult => {
     }
   );
   const { data: rolesData, error: rolesError } = useSWR(
-    `/management/roles`,
+    selectedTenant ? `/management/tenant/${selectedTenant}/roles` : null,
     (url) => {
       return fetcher(
         url,
@@ -162,7 +165,7 @@ export const useGetUser = (userId: string): GetUserResult => {
     }
   );
   const { data: groupsData, error: groupsError } = useSWR(
-    `/management/groups`,
+    selectedTenant ? `/management/tenant/${selectedTenant}/groups` : null,
     (url) => {
       return fetcher(
         url,
