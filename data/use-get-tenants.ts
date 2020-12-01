@@ -81,11 +81,9 @@ export const useGetTenant = (tenantId: string): GetTenantResult => {
     return fetcher(url, null, sampleTenant());
   });
 
-  const loading = !error && !data;
-
   return {
-    data,
-    loading,
+    data: data ? data.data : null,
+    loading: !error && !data,
     error
   };
 };

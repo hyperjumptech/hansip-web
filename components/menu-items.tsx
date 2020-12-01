@@ -2,7 +2,7 @@ import React from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCogs,
+  faUsers,
   faUser,
   faUserFriends,
   faUserTie
@@ -27,5 +27,11 @@ export const sidebarItems: Array<RowItem> = [
     as: "/dashboard/roles/list",
     title: "roles",
     icon: <FontAwesomeIcon icon={faUserTie} fixedWidth />
+  },
+  {
+    href: "/dashboard/[resource]/list",
+    as: "/dashboard/tenants/list",
+    title: "tenants",
+    icon: <FontAwesomeIcon icon={faUsers} fixedWidth />
   }
 ];
