@@ -7,6 +7,7 @@ import { RoleType } from "./use-get-roles";
 export interface GroupType {
   rec_id: string;
   group_name: string;
+  group_domain: string;
   description?: string;
   roles?: Array<RoleType>;
 }
@@ -14,6 +15,7 @@ export interface GroupType {
 export const EmptyGroup: GroupType = {
   rec_id: "",
   group_name: "",
+  group_domain: "",
   description: "",
   roles: []
 };

@@ -1,12 +1,15 @@
-import React, { useContext } from "react";
+import React, { useMemo } from "react";
 import SplitPanel from "./split-panel";
 import SideBar, { MobileMenuBar } from "./sidebar";
-import { sidebarItems } from "./menu-items";
+import { getSidebarItems } from "./menu-items";
 import DesktopHeader from "./header";
 import { useLocale } from "./locales";
+import { useWhoAmI } from "../data/user";
 
 export default function DashboardLayout({ children }) {
   const { strings } = useLocale();
+  const { data: user } = useWhoAmI();
+  const sidebarItems = useMemo(() => getSidebarItems(user), [user]);
   const sidebarItemsToUse = sidebarItems.map((s) => ({
     ...s,
     title: s ? strings(s.title) : ""

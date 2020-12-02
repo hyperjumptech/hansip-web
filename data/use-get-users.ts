@@ -218,7 +218,14 @@ export const useGetUser = (userId: string): GetUserResult => {
 export default useGetUsers;
 
 export const isAAAAdmin = (user: UserType): boolean => {
-  return user && user.roles
-    ? user.roles.findIndex((r) => r.role_name === "admin@aaa") > -1
-    : false;
+  const roles = [
+    ...(user?.roles ?? []),
+    ...(user?.groups?.flatMap((g) => g.roles ?? []) ?? [])
+  ];
+
+  return roles.some(
+    (r) =>
+      r.role_name === process.env.NEXT_PUBLIC_HANSIP_ADMIN &&
+      r.role_domain === process.env.NEXT_PUBLIC_HANSIP_DOMAIN
+  );
 };

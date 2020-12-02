@@ -5,12 +5,14 @@ import { useTenant } from "./tenant";
 export interface RoleType {
   rec_id: string;
   role_name: string;
+  role_domain: string;
   description?: string;
 }
 
 export const EmptyRole: RoleType = {
   rec_id: "",
   role_name: "",
+  role_domain: "",
   description: ""
 };
 
