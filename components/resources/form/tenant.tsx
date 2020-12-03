@@ -65,7 +65,7 @@ const TenantFormView = ({
 };
 
 interface TenantFormProps {
-  initialData: typeof EmptyTenant;
+  initialData: TenantType;
   isEdit?: boolean;
 }
 const TenantForm = ({ initialData = EmptyTenant, isEdit }: TenantFormProps) => {
@@ -95,18 +95,42 @@ const TenantForm = ({ initialData = EmptyTenant, isEdit }: TenantFormProps) => {
       },
       null,
       isEdit ? "PUT" : "POST"
-    ).then((response) => {
-      if (!response) {
-        setIsLoading(false);
-      } else {
+    )
+      .then((response) => {
         if (response.status === "SUCCESS") {
-          router.push("/dashboard/tenants/list");
+          if (!isEdit) {
+            // create admin role for new tenant
+            return post(
+              `/management/role`,
+              {
+                role_name: process.env.NEXT_PUBLIC_HANSIP_ADMIN,
+                role_domain: tenant.domain,
+                description: `${tenant.name} admin role`
+              },
+              null,
+              "POST"
+            );
+          } else {
+            router.push("/dashboard/tenants/list");
+            return null;
+          }
         } else {
           setIsLoading(false);
           setError(response.message);
+          return null;
         }
-      }
-    });
+      })
+      .then((roleResponse) => {
+        if (!roleResponse) {
+          setIsLoading(false);
+          return null;
+        } else if (roleResponse.status === "SUCCESS") {
+          router.push("/dashboard/tenants/list");
+        } else {
+          setIsLoading(false);
+          setError(roleResponse.message);
+        }
+      });
   };
   const onDelete = (e) => {
     e.preventDefault();
