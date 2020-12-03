@@ -60,7 +60,7 @@ const useGetGroups = ({
 
   const { data, error } = useSWR(
     [
-      selectedTenant ? `/management/tenant/${selectedTenant}/groups` : null,
+      selectedTenant ? `/management/tenant/${selectedTenant?.rec_id}/groups` : null,
       page_no,
       page_size,
       order_by,
@@ -93,6 +93,7 @@ export interface GetGroupResult {
   error: Error;
 }
 export const useGetGroup = (groupId: string): GetGroupResult => {
+  const { selectedTenant } = useTenant();
   const {
     data: groupData,
     error: groupError
@@ -106,7 +107,7 @@ export const useGetGroup = (groupId: string): GetGroupResult => {
     }
   );
   const { data: rolesData, error: rolesError } = useSWR(
-    `/management/roles`,
+    selectedTenant ? `/management/tenant/${selectedTenant.rec_id}/roles` : null,
     (url) => {
       return fetcher(
         url,

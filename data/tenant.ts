@@ -1,9 +1,10 @@
 import { createContext, useContext } from "react";
+import { TenantType } from "./use-get-tenants";
 
 export const defaultTenantContext = {
   tenants: [],
   selected: null,
-  updateTenant: (id: string): void => {}
+  updateTenant: (tenant: TenantType): void => {}
 };
 
 export const TenantContext = createContext(defaultTenantContext);

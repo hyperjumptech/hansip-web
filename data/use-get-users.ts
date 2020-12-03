@@ -155,7 +155,7 @@ export const useGetUser = (userId: string): GetUserResult => {
     }
   );
   const { data: rolesData, error: rolesError } = useSWR(
-    selectedTenant ? `/management/tenant/${selectedTenant}/roles` : null,
+    selectedTenant ? `/management/tenant/${selectedTenant?.rec_id}/roles` : null,
     (url) => {
       return fetcher(
         url,
@@ -165,7 +165,7 @@ export const useGetUser = (userId: string): GetUserResult => {
     }
   );
   const { data: groupsData, error: groupsError } = useSWR(
-    selectedTenant ? `/management/tenant/${selectedTenant}/groups` : null,
+    selectedTenant ? `/management/tenant/${selectedTenant?.rec_id}/groups` : null,
     (url) => {
       return fetcher(
         url,

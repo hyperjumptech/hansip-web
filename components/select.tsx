@@ -28,24 +28,22 @@ const Select = ({
   disabled = false
 }: SelectProps) => {
   return (
-    <div className="px-2">
-      <div className="inline-block relative">
-        <select
-          disabled={disabled}
-          value={value}
-          onChange={onChange}
-          className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow focus:outline-none focus:shadow-outline">
-          {options.map((opt, i) => {
-            return (
-              <option value={opt.value} key={i}>
-                {opt.title}
-              </option>
-            );
-          })}
-        </select>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-          <CaretDown />
-        </div>
+    <div className="inline-block relative">
+      <select
+        disabled={disabled}
+        value={value}
+        onChange={onChange}
+        className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow focus:outline-none focus:shadow-outline">
+        {options.map((opt, i) => {
+          return (
+            <option value={opt.value} key={i}>
+              {opt.title}
+            </option>
+          );
+        })}
+      </select>
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+        <CaretDown />
       </div>
     </div>
   );

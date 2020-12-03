@@ -98,7 +98,7 @@ function MainApp({ Component, pageProps }: MainAppProps) {
       setTenantContext({
         ...tenantContext,
         tenants: user?.tenants || [],
-        selected: user?.tenants?.[0]?.rec_id || null
+        selected: user?.tenants?.[0] || null
       });
     }
   }, [user]);

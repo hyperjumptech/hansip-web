@@ -140,7 +140,8 @@ const GroupForm = ({
       isEdit ? `/management/group/${group.rec_id}` : "/management/group",
       {
         group_name: group.group_name,
-        description: group.description
+        description: group.description,
+        group_domain: group.group_domain
       },
       null,
       isEdit ? "PUT" : "POST"

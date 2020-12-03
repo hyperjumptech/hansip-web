@@ -1,7 +1,7 @@
 import useSWR, { mutate } from "swr";
 import fetcher from "./fetcher";
 import { createContext, useContext, useMemo, useState } from "react";
-import { UserType } from "./use-get-users";
+import { isAAAAdmin, UserType } from "./use-get-users";
 import useGetTenants from "./use-get-tenants";
 import { post } from "./requests";
 
@@ -71,9 +71,17 @@ export const useWhoAmI = () => {
         ...whoamiData.data.groups.map((group) => group.group_domain)
       ];
 
-      const tenants = tenantsData.tenants
-        .filter((tenant) => domains.includes(tenant.domain))
-        .sort((a, b) => Number(a.name < b.name));
+      const hansipItem = tenantsData.tenants.find(
+        (item) => item.domain === process.env.NEXT_PUBLIC_HANSIP_DOMAIN
+      );
+      let tenants = tenantsData.tenants.filter((tenant) => tenant.domain !== process.env.NEXT_PUBLIC_HANSIP_DOMAIN)
+      tenants.unshift(hansipItem)
+
+      if (!isAAAAdmin(whoamiData.data)) {
+        tenants = tenantsData.tenants.filter((tenant) =>
+          domains.includes(tenant.domain)
+        );
+      }
 
       return Object.assign({}, whoamiData.data, { tenants });
     } else {

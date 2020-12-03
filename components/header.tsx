@@ -4,6 +4,7 @@ import { LanguageContext, useLocale } from "./locales";
 import { TenantContext } from "../data/tenant";
 import { useUser } from "../data/user";
 import Dropdown from "./dropdown";
+import { TenantType } from "../data/use-get-tenants";
 
 const AccountDropdown = () => {
   const user = useUser();
@@ -17,18 +18,15 @@ const AccountDropdown = () => {
             <CaretDown />
           </div>
         </div>
-      }
-    >
+      }>
       <a
         href="/dashboard/settings"
-        className="block px-4 py-2 account-link hover:text-white"
-      >
+        className="block px-4 py-2 account-link hover:text-white">
         {strings("settings")}
       </a>
       <a
         href="/logout"
-        className="block px-4 py-2 account-link hover:text-white"
-      >
+        className="block px-4 py-2 account-link hover:text-white">
         {strings("sign-out")}
       </a>
     </Dropdown>
@@ -45,7 +43,8 @@ const DesktopHeader = ({ showLogo }: DesktopHeaderProps) => {
 
   const tenantOptions = (tenant.tenants || []).map((tenant) => ({
     title: tenant.name,
-    value: tenant.rec_id
+    value: tenant.rec_id,
+    domain: tenant.domain
   }));
 
   return (
@@ -53,13 +52,17 @@ const DesktopHeader = ({ showLogo }: DesktopHeaderProps) => {
       {showLogo && <h1 className=" text-3xl font-bold text-white">HANSIP</h1>}
       {!showLogo && <div></div>}
       <div className={`relative flex justify-end items-center`}>
-        <Select
-          onChange={(event) => {
-            tenant.updateTenant(event.target.value);
-          }}
-          value={tenant.selected}
-          options={tenantOptions}
-        />
+        <div className="px-2">
+          <Select
+            onChange={(event) => {
+              tenant.updateTenant(
+                tenant.tenants.find((x) => x.rec_id === event.target.value)
+              );
+            }}
+            value={tenant.selected.rec_id}
+            options={tenantOptions}
+          />
+        </div>
         <Select
           onChange={(event) => {
             language.updateLanguage(event.target.value);

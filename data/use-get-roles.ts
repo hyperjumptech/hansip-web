@@ -5,15 +5,15 @@ import { useTenant } from "./tenant";
 export interface RoleType {
   rec_id: string;
   role_name: string;
-  role_domain: string;
   description?: string;
+  role_domain: string;
 }
 
 export const EmptyRole: RoleType = {
   rec_id: "",
   role_name: "",
-  role_domain: "",
-  description: ""
+  description: "",
+  role_domain: ""
 };
 
 export interface GetRolesResult {
@@ -56,7 +56,7 @@ const useGetRoles = ({
 
   const { data, error } = useSWR(
     [
-      selectedTenant ? `/management/tenant/${selectedTenant}/roles` : null,
+      selectedTenant ? `/management/tenant/${selectedTenant?.rec_id}/roles` : null,
       page_no,
       page_size,
       order_by,

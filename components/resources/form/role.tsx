@@ -1,10 +1,11 @@
-import React, { useState, useContext, FormEvent } from "react";
+import React, { useState, useContext, FormEvent, useEffect } from "react";
 import { useLocale } from "../../locales";
 import { RoleType, EmptyRole } from "../../../data/use-get-roles";
 import { LabelInput } from "../../label-input";
 import { post } from "../../../data/requests";
 import { useRouter } from "next/router";
 import SaveDeleteButtons from "./components/save-delete-buttons";
+import { TenantContext } from "../../../data/tenant";
 
 interface RoleFormViewProps {
   role: RoleType;
@@ -48,7 +49,6 @@ const RoleFormView = ({
         placeholder="Description"
         onChange={(e) => onChange("description", e.target.value)}
       />
-
       <SaveDeleteButtons showDelete={isEdit} onDelete={onDelete} />
     </form>
   );
@@ -64,6 +64,11 @@ const RoleForm = ({ initialData = EmptyRole, isEdit }: RoleFormProps) => {
   const [error, setError] = useState(null);
   const router = useRouter();
   const { strings } = useLocale();
+  const tenant = useContext(TenantContext);
+
+  useEffect(() => {
+    onChange("role_domain", tenant.selected.domain)
+  }, [tenant.selected])
 
   const onChange = (key: string, value: any) => {
     setRole((u) => ({
@@ -79,7 +84,8 @@ const RoleForm = ({ initialData = EmptyRole, isEdit }: RoleFormProps) => {
       isEdit ? `/management/role/${role.rec_id}` : "/management/role",
       {
         role_name: role.role_name,
-        description: role.description
+        description: role.description,
+        role_domain: role.role_domain
       },
       null,
       isEdit ? "PUT" : "POST"
