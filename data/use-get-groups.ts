@@ -1,11 +1,13 @@
 import useSWR from "swr";
 import { GroupFormInitialData } from "../components/resources/form/group";
 import fetcher, { DataPagingType, DataPagingQueryType } from "./fetcher";
+import { useTenant } from "./tenant";
 import { RoleType } from "./use-get-roles";
 
 export interface GroupType {
   rec_id: string;
   group_name: string;
+  group_domain: string;
   description?: string;
   roles?: Array<RoleType>;
 }
@@ -13,6 +15,7 @@ export interface GroupType {
 export const EmptyGroup: GroupType = {
   rec_id: "",
   group_name: "",
+  group_domain: "",
   description: "",
   roles: []
 };
@@ -53,8 +56,16 @@ const useGetGroups = ({
   order_by,
   sort
 }: DataPagingQueryType): GetGroupsResult => {
+  const { selectedTenant } = useTenant();
+
   const { data, error } = useSWR(
-    ["/management/groups", page_no, page_size, order_by, sort],
+    [
+      selectedTenant ? `/management/tenant/${selectedTenant?.rec_id}/groups` : null,
+      page_no,
+      page_size,
+      order_by,
+      sort
+    ],
     (url, page_no, page_size, order_by, sort) => {
       return fetcher(
         url,
@@ -82,6 +93,7 @@ export interface GetGroupResult {
   error: Error;
 }
 export const useGetGroup = (groupId: string): GetGroupResult => {
+  const { selectedTenant } = useTenant();
   const {
     data: groupData,
     error: groupError
@@ -95,7 +107,7 @@ export const useGetGroup = (groupId: string): GetGroupResult => {
     }
   );
   const { data: rolesData, error: rolesError } = useSWR(
-    `/management/roles`,
+    selectedTenant ? `/management/tenant/${selectedTenant.rec_id}/roles` : null,
     (url) => {
       return fetcher(
         url,

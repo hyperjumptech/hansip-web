@@ -1,0 +1,27 @@
+[
+  {
+    "tenant_name": "Tenant 1",
+    "description": "Hansip tenant 1",
+    "domain": "hansip"
+  },
+  {
+    "tenant_name": "Tenant 2",
+    "description": "Hansip tenant 2",
+    "domain": "hansip"
+  },
+  {
+    "tenant_name": "Tenant 3",
+    "description": "Hansip tenant 3",
+    "domain": "hansip"
+  },
+  {
+    "tenant_name": "Tenant 4",
+    "description": "Hansip tenant 4",
+    "domain": "hansip"
+  },
+  {
+    "tenant_name": "Tenant 5",
+    "description": "Hansip tenant 5",
+    "domain": "hansip"
+  }
+]

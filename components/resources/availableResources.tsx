@@ -1,18 +1,22 @@
 import useGetUsers, { useGetUser } from "../../data/use-get-users";
 import useGetRoles, { useGetRole } from "../../data/use-get-roles";
 import useGetGroups, { useGetGroup } from "../../data/use-get-groups";
+import useGetTenants, { useGetTenant } from "../../data/use-get-tenants";
 import { UsersPageView } from "./list/users";
 import { GroupsPageView } from "./list/groups";
 import { RolesPageView } from "./list/roles";
+import { TenantsPageView } from "./list/tenants";
 import UserForm from "./form/user";
 import RoleForm from "./form/role";
 import GroupForm from "./form/group";
+import TenantForm from "./form/tenant";
 import { DataPagingQueryType } from "../../data/fetcher";
 
 export enum Resource {
   USERS = "users",
   ROLES = "roles",
-  GROUPS = "groups"
+  GROUPS = "groups",
+  TENANTS = "tenants"
 }
 export type ResourceType = {
   components: {
@@ -59,6 +63,17 @@ export const availableResources: AvailableResourcesType = {
     useDataList: useGetGroups,
     useDataSingle: useGetGroup,
     orders: ["group_name"],
+    uneditableKeys: []
+  },
+  tenants: {
+    components: {
+      list: TenantsPageView,
+      form: TenantForm
+    },
+    dataKey: "tenants",
+    useDataList: useGetTenants,
+    useDataSingle: useGetTenant,
+    orders: ["name", "domain"],
     uneditableKeys: []
   }
 };

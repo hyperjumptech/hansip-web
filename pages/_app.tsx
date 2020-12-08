@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import "../styles/index.css";
 
 import { config } from "@fortawesome/fontawesome-svg-core";
@@ -16,6 +16,7 @@ import { UserContext, defaultUserContext, useWhoAmI } from "../data/user";
 import { useRouter } from "next/router";
 import Error from "../components/error";
 import { apiURL } from "../data/requests";
+import { defaultTenantContext, TenantContext } from "../data/tenant";
 dayjs.extend(localizedFormat);
 
 const publicPages = ["/", "/activate", "/recover"];
@@ -66,6 +67,7 @@ const Root = (props: MainAppProps) => {
 function MainApp({ Component, pageProps }: MainAppProps) {
   const [langContext, setLangContext] = useState(defaultLanguageContext);
   const [currentUser, setCurrentUser] = useState(null);
+  const [tenantContext, setTenantContext] = useState(defaultTenantContext);
   const { strings } = useLocale();
   const updateLanguage = useCallback(
     (selectedLanguage) => {
@@ -76,6 +78,15 @@ function MainApp({ Component, pageProps }: MainAppProps) {
     },
     [langContext]
   );
+  const updateTenant = useCallback(
+    (selectedTenant) => {
+      setTenantContext({
+        ...tenantContext,
+        selected: selectedTenant
+      });
+    },
+    [tenantContext]
+  );
 
   const { data: user, loading, error, slowLoading } = useWhoAmI();
   const router = useRouter();
@@ -84,6 +95,11 @@ function MainApp({ Component, pageProps }: MainAppProps) {
   useEffect(() => {
     if (user) {
       setCurrentUser(user);
+      setTenantContext({
+        ...tenantContext,
+        tenants: user?.tenants || [],
+        selected: user?.tenants?.[0] || null
+      });
     }
   }, [user]);
 
@@ -120,12 +136,14 @@ function MainApp({ Component, pageProps }: MainAppProps) {
   return (
     <LanguageContext.Provider value={{ ...langContext, updateLanguage }}>
       <UserContext.Provider value={currentUser}>
-        <div className="bg-gray-100 font-family-karla flex">
-          {(error || slowLoading) && (
-            <Error message={strings("error-connect")} />
-          )}
-          {!error && !showLoading && <Component {...pageProps} />}
-        </div>
+        <TenantContext.Provider value={{ ...tenantContext, updateTenant }}>
+          <div className="bg-gray-100 font-family-karla flex">
+            {(error || slowLoading) && (
+              <Error message={strings("error-connect")} />
+            )}
+            {!error && !showLoading && <Component {...pageProps} />}
+          </div>
+        </TenantContext.Provider>
       </UserContext.Provider>
     </LanguageContext.Provider>
   );

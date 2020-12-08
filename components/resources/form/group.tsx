@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useEffect, useContext } from "react";
 import { useLocale } from "../../locales";
 import { GroupType, EmptyGroup } from "../../../data/use-get-groups";
 import { LabelInput } from "../../label-input";
@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { post } from "../../../data/requests";
 import { RoleType } from "../../../data/use-get-roles";
 import SaveDeleteButtons from "./components/save-delete-buttons";
+import { TenantContext } from "../../../data/tenant";
 
 interface GroupFormViewProps {
   group: GroupType;
@@ -124,6 +125,11 @@ const GroupForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { strings } = useLocale();
+  const tenant = useContext(TenantContext);
+
+  useEffect(() => {
+    onChange("group_domain", tenant.selected.domain)
+  }, [tenant.selected])
 
   const onChange = (key: string, value: any) => {
     setGroup((u) => ({
@@ -140,7 +146,8 @@ const GroupForm = ({
       isEdit ? `/management/group/${group.rec_id}` : "/management/group",
       {
         group_name: group.group_name,
-        description: group.description
+        description: group.description,
+        group_domain: group.group_domain
       },
       null,
       isEdit ? "PUT" : "POST"

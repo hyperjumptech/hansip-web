@@ -1,16 +1,19 @@
 import useSWR from "swr";
 import fetcher, { DataPagingType, DataPagingQueryType } from "./fetcher";
+import { useTenant } from "./tenant";
 
 export interface RoleType {
   rec_id: string;
   role_name: string;
   description?: string;
+  role_domain: string;
 }
 
 export const EmptyRole: RoleType = {
   rec_id: "",
   role_name: "",
-  description: ""
+  description: "",
+  role_domain: ""
 };
 
 export interface GetRolesResult {
@@ -49,8 +52,16 @@ const useGetRoles = ({
   order_by,
   sort
 }: DataPagingQueryType): GetRolesResult => {
+  const { selectedTenant } = useTenant();
+
   const { data, error } = useSWR(
-    ["/management/roles", page_no, page_size, order_by, sort],
+    [
+      selectedTenant ? `/management/tenant/${selectedTenant?.rec_id}/roles` : null,
+      page_no,
+      page_size,
+      order_by,
+      sort
+    ],
     (url, page_no, page_size, order_by, sort) => {
       return fetcher(
         url,

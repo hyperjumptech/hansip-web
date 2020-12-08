@@ -2,7 +2,9 @@ import useSWR from "swr";
 import fetcher, { DataPagingType, DataPagingQueryType } from "./fetcher";
 import { RoleType } from "./use-get-roles";
 import { GroupType } from "./use-get-groups";
+import { TenantType } from "./use-get-tenants";
 import { UserFormInitialData } from "../components/resources/form/user";
+import { useTenant } from "./tenant";
 
 export interface UserType {
   rec_id: string;
@@ -16,6 +18,7 @@ export interface UserType {
   refresh_token?: string;
   roles?: Array<RoleType>;
   groups?: Array<GroupType>;
+  tenants?: Array<TenantType>;
   password?: string;
 }
 
@@ -123,6 +126,8 @@ export interface GetUserResult {
   error: Error;
 }
 export const useGetUser = (userId: string): GetUserResult => {
+  const { selectedTenant } = useTenant();
+
   const { data: userData, error: userError } = useSWR(
     `/management/user/${userId}`,
     (url) => {
@@ -150,7 +155,7 @@ export const useGetUser = (userId: string): GetUserResult => {
     }
   );
   const { data: rolesData, error: rolesError } = useSWR(
-    `/management/roles`,
+    selectedTenant ? `/management/tenant/${selectedTenant?.rec_id}/roles` : null,
     (url) => {
       return fetcher(
         url,
@@ -160,7 +165,7 @@ export const useGetUser = (userId: string): GetUserResult => {
     }
   );
   const { data: groupsData, error: groupsError } = useSWR(
-    `/management/groups`,
+    selectedTenant ? `/management/tenant/${selectedTenant?.rec_id}/groups` : null,
     (url) => {
       return fetcher(
         url,
@@ -213,7 +218,14 @@ export const useGetUser = (userId: string): GetUserResult => {
 export default useGetUsers;
 
 export const isAAAAdmin = (user: UserType): boolean => {
-  return user && user.roles
-    ? user.roles.findIndex((r) => r.role_name === "admin@aaa") > -1
-    : false;
+  const roles = [
+    ...(user?.roles ?? []),
+    ...(user?.groups?.flatMap((g) => g.roles ?? []) ?? [])
+  ];
+
+  return roles.some(
+    (r) =>
+      r.role_name === process.env.NEXT_PUBLIC_HANSIP_ADMIN &&
+      r.role_domain === process.env.NEXT_PUBLIC_HANSIP_DOMAIN
+  );
 };

@@ -1,0 +1,56 @@
+{
+  "httpcode": 200,
+  "message": "List of all tenants paginated",
+  "status": "SUCCESS",
+  "data": {
+    "page": {
+      "no": 1,
+      "total_pages": 2,
+      "page_size": 5,
+      "items": 5,
+      "total_items": 8,
+      "has_next": true,
+      "has_prev": false,
+      "is_first": true,
+      "is_last": false,
+      "fist_page": 1,
+      "next_page": 2,
+      "prev_page": 1,
+      "last_page": 2,
+      "order_by": "role_name",
+      "sort": "ASC"
+    },
+    "tenants": [
+      {
+        "rec_id": "0006",
+        "name": "Tenant 6",
+        "description": "Hansip Tenant 6",
+        "domain": "hansip"
+      },
+      {
+        "rec_id": "0007",
+        "name": "Tenant 7",
+        "description": "Hansip Tenant 7",
+        "domain": "hansip"
+      },
+      {
+        "rec_id": "0008",
+        "name": "Tenant 8",
+        "description": "Hansip Tenant 8",
+        "domain": "hansip"
+      },
+      {
+        "rec_id": "0009",
+        "name": "Tenant 9",
+        "description": "Hansip Tenant 9",
+        "domain": "hansip"
+      },
+      {
+        "rec_id": "0010",
+        "name": "Tenant 10",
+        "description": "Hansip Tenant 10",
+        "domain": "hansip"
+      }
+    ]
+  }
+}

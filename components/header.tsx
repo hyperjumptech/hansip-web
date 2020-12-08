@@ -1,8 +1,10 @@
 import React, { useContext } from "react";
 import Select, { CaretDown } from "./select";
 import { LanguageContext, useLocale } from "./locales";
+import { TenantContext } from "../data/tenant";
 import { useUser } from "../data/user";
 import Dropdown from "./dropdown";
+import { TenantType } from "../data/use-get-tenants";
 
 const AccountDropdown = () => {
   const user = useUser();
@@ -36,12 +38,31 @@ interface DesktopHeaderProps {
 }
 const DesktopHeader = ({ showLogo }: DesktopHeaderProps) => {
   const language = useContext(LanguageContext);
+  const tenant = useContext(TenantContext);
   const user = useUser();
+
+  const tenantOptions = (tenant.tenants || []).map((tenant) => ({
+    title: tenant.name,
+    value: tenant.rec_id,
+    domain: tenant.domain
+  }));
+
   return (
     <header className="w-full flex items-center justify-between bg-white py-2 px-6 space-x-2 bg-opacity-25">
       {showLogo && <h1 className=" text-3xl font-bold text-white">HANSIP</h1>}
       {!showLogo && <div></div>}
-      <div className={`relative  flex justify-end items-center`}>
+      <div className={`relative flex justify-end items-center`}>
+        <div className="px-2">
+          <Select
+            onChange={(event) => {
+              tenant.updateTenant(
+                tenant.tenants.find((x) => x.rec_id === event.target.value)
+              );
+            }}
+            value={tenant.selected.rec_id}
+            options={tenantOptions}
+          />
+        </div>
         <Select
           onChange={(event) => {
             language.updateLanguage(event.target.value);
@@ -59,7 +80,7 @@ const DesktopHeader = ({ showLogo }: DesktopHeaderProps) => {
           ]}
         />
         {user && user.rec_id && (
-          <div className={`relative  flex justify-end`}>
+          <div className={`relative flex justify-end`}>
             <AccountDropdown />
           </div>
         )}
