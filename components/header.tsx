@@ -52,17 +52,19 @@ const DesktopHeader = ({ showLogo }: DesktopHeaderProps) => {
       {showLogo && <h1 className=" text-3xl font-bold text-white">HANSIP</h1>}
       {!showLogo && <div></div>}
       <div className={`relative flex justify-end items-center`}>
-        <div className="px-2">
-          <Select
-            onChange={(event) => {
-              tenant.updateTenant(
-                tenant.tenants.find((x) => x.rec_id === event.target.value)
-              );
-            }}
-            value={tenant.selected.rec_id}
-            options={tenantOptions}
-          />
-        </div>
+        {!!tenant.selected && (
+          <div className="px-2">
+            <Select
+              onChange={(event) => {
+                tenant.updateTenant(
+                  tenant.tenants.find((x) => x.rec_id === event.target.value)
+                );
+              }}
+              value={tenant?.selected?.rec_id || ''}
+              options={tenantOptions}
+            />
+          </div>
+        )}
         <Select
           onChange={(event) => {
             language.updateLanguage(event.target.value);
